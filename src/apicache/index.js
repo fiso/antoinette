@@ -36,14 +36,15 @@ async function callApi (url) {
 }
 
 app.get('*', async (req, res) => {
-  const cached = await getAsync(req.originalUrl);
+  const url = req.originalUrl.replace(/^\/api/, '');
+  const cached = await getAsync(url);
 
-  console.log('>>', req.originalUrl);
+  console.log('>>', url);
   console.log(cached ? 'HIT' : 'MISS');
 
   const response = cached
     ? JSON.parse(cached)
-    : await callApi(req.originalUrl);
+    : await callApi(url);
 
   res.status(response.status).send(response.data);
 });
