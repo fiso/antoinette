@@ -94,29 +94,6 @@ function remove_menus() {
 }
 add_action('admin_menu', 'remove_menus');
 
-function users_admin_page() {
-    ?>
-    <iframe src='/user-backoffice' scrolling='no' style='
-        height: calc(100vh - 175px);
-        margin-top: 20px;
-        overflow: hidden;
-        width: calc(100% - 20px);
-    '></iframe>
-    <?php
-}
-
-add_action('admin_menu', 'add_user_menu');
-function add_user_menu() {
-    add_menu_page(
-        'Users',
-        'Users',
-        'manage_options',
-        'users/users-admin-page.php',
-        'users_admin_page',
-        'dashicons-admin-users'
-    );
-}
-
 function remove_core_updates() {
     global $wp_version;
     return(object) array('last_checked'=> time(),'version_checked'=> $wp_version);
@@ -306,3 +283,4 @@ function get_og_tags($p) {
 
 include('custom_post_types.php');
 include('autocompress.php');
+include('antoinette.php');
