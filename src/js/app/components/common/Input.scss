@@ -1,0 +1,149 @@
+@import '../../../../scss/main';
+
+$accent-color: $color-yellow;
+$contrast-color: $color-white;
+$horizontal-padding: .5em;
+
+fieldset {
+  border: 0;
+}
+
+.input-wrapper,
+select,
+input,
+label,
+textarea {
+  align-items: center;
+  background-color: transparent;
+  display: flex;
+  font-family: inherit;
+  font-size: inherit;
+  height: #{(44 / 24)}em;
+  letter-spacing: inherit;
+  line-height: inherit;
+  outline: 0;
+  width: 100%;
+
+  &:focus-within,
+  &:focus {
+    border-color: $accent-color;
+  }
+
+  &:disabled {
+    opacity: .5;
+    pointer-events: none;
+  }
+}
+
+.input-wrapper {
+  cursor: pointer;
+
+  &.select {
+    border: 1px solid;
+    position: relative;
+
+    &::after {
+      $size: .5em;
+      border: 0 solid;
+      border-bottom-width: 1px;
+      border-color: inherit;
+      border-right-width: 1px;
+      content: '';
+      height: $size;
+      pointer-events: none;
+      position: absolute;
+      right: $horizontal-padding;
+      top: 50%;
+      transform: translateY(-75%) rotate(45deg);
+      width: $size;
+    }
+
+    &:focus-within,
+    &:focus {
+      border-color: $accent-color;
+    }
+  }
+}
+
+select {
+  -moz-appearance: none; // sass-lint:disable-line no-vendor-prefixes
+  -webkit-appearance: none; // sass-lint:disable-line no-vendor-prefixes
+  border: 0;
+  cursor: pointer;
+  padding: 0 $horizontal-padding;
+}
+
+input {
+  border: 1px solid;
+  padding: 0 $horizontal-padding;
+
+  &[type='checkbox'],
+  &[type='radio'] {
+    $size: 1em;
+    -moz-appearance: none; // sass-lint:disable-line no-vendor-prefixes
+    -webkit-appearance: none; // sass-lint:disable-line no-vendor-prefixes
+    cursor: pointer;
+    flex-shrink: 0;
+    height: $size;
+    margin-right: $size;
+    padding: 0;
+    width: $size;
+  }
+
+  &[type='checkbox'] {
+    &:checked {
+      &::before {
+        $size: 100%;
+        align-items: center;
+        background-color: $accent-color;
+        color: $contrast-color;
+        content: '✓';
+        display: flex;
+        font-size: .85em;
+        font-weight: bold;
+        height: $size;
+        justify-content: center;
+        width: $size;
+      }
+    }
+  }
+
+  &[type='radio'] {
+    border-radius: 100%;
+
+    &:checked {
+      align-items: center;
+      background-color: $accent-color;
+      display: flex;
+      justify-content: center;
+
+      &::before {
+        $size: 60%;
+        background-color: $contrast-color;
+        border-radius: 100%;
+        content: '';
+        height: $size;
+        width: $size;
+      }
+    }
+  }
+}
+
+label {
+  cursor: pointer;
+
+  input {
+    width: auto;
+  }
+}
+
+textarea {
+  padding: .24em #{$horizontal-padding + .04em};
+  resize: none;
+
+  &:not([rows='1']) {
+    height: auto;
+  }
+}
+
+@import './AppInputStyles';

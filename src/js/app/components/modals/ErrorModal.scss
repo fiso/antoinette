@@ -1,0 +1,60 @@
+@import '../../../../scss/main';
+
+.error-modal {
+  > * {
+    &:not(:last-child) {
+      margin-bottom: 2 * $grid-size;
+    }
+  }
+
+  .extendedinfo {
+    a {
+      @include typo-p-small;
+      color: $color-grey;
+      display: flex;
+      padding-left: calc(1em + #{$grid-size});
+      position: relative;
+
+      &::before {
+        $size: .8em;
+        align-items: center;
+        border: 1px solid;
+        content: '+';
+        display: flex;
+        height: $size;
+        justify-content: center;
+        left: 0;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: $size;
+      }
+    }
+
+    textarea {
+      background-color: $color-latte;
+      border: 0;
+      display: none;
+      font-family: 'Operator mono', 'Fira code', monospace;
+      font-size: .7em;
+      line-height: 1.5em;
+      max-height: 200px;
+      min-width: 60vw;
+      overflow-y: scroll;
+      padding: 8px;
+      word-break: break-all;
+    }
+
+    &.extended {
+      a {
+        &::before {
+          content: '-';
+        }
+      }
+
+      textarea {
+        display: flex;
+      }
+    }
+  }
+}

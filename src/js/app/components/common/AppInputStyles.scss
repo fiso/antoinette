@@ -1,0 +1,105 @@
+@import '../../../../scss/main';
+
+.validation-error {
+  border-color: $color-red !important;
+  color: $color-red !important;
+
+  &::placeholder {
+    color: $color-red !important;
+  }
+
+  input,
+  label,
+  select {
+    border-color: $color-red !important;
+    color: $color-red !important;
+  }
+
+  &::after {
+    border-color: $color-red !important;
+  }
+}
+
+.input-wrapper {
+  &.select {
+    border-bottom-width: 1px;
+    border-color: $color-grey-3;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+
+    &::after {
+      $size: .35em;
+      border-color: $color-grey-3;
+      height: $size;
+      width: $size;
+    }
+
+    &:focus-within,
+    &:focus {
+      border-color: inherit;
+    }
+
+    select {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  &.checkbox,
+  &.radio {
+    &:focus-within,
+    &:focus {
+      span {
+        @include focus-effect;
+      }
+    }
+  }
+}
+
+input {
+  border-color: $color-grey-3;
+  position: relative;
+
+  &[type='checkbox'],
+  &[type='radio'] {
+    transition: none $transition-fast ease-in-out;
+    transition-property: background-color, border-color;
+  }
+
+  &[type='checkbox'] {
+    &:checked {
+      border-color: $color-yellow;
+
+      &::before {
+        content: '';
+      }
+    }
+  }
+
+  &[type='radio'] {
+    &:checked {
+      border-color: $color-yellow;
+
+      &::before {
+        content: initial;
+      }
+    }
+  }
+
+  &:not([type='checkbox']) {
+    &:not([type='radio']) {
+      border-bottom-width: 1px;
+      border-color: $color-grey-3;
+      border-left-width: 0;
+      border-right-width: 0;
+      border-top-width: 0;
+      padding-left: 0;
+      padding-right: 0;
+
+      &:focus {
+        @include focus-effect;
+      }
+    }
+  }
+}
