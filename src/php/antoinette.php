@@ -36,7 +36,9 @@ function get_site_page(WP_REST_Request $request) {
     $id = $request['id'];
 
     if ($id) {
-        return json_response(get_field('sections', $id));
+        return json_response(array(
+            'sections' => get_field('sections', $id),
+        ));
     } else {
         return json_response(get_pages());
     }
