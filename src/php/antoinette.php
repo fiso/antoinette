@@ -51,12 +51,43 @@ add_action('rest_api_init', function () {
 });
 
 // acf/load_value/type={$field_type} - filter for a value load based on it's field type
-add_filter('acf/load_value/type=wysiwyg', 'acf_apply_post_content_filter', 10, 3);
+add_filter('acf/format_value/type=wysiwyg', 'acf_apply_post_content_filter', 20, 3);
 function acf_apply_post_content_filter($value, $post_id, $field) {
+    if (is_user_logged_in()) {
+        return $value;
+    }
     return apply_filters('the_content', $value);
+    // return "ny kul text!!";
 }
 
+add_filter('acf/format_value/type=relationship', 'acf_relationship_filter', 20, 3);
+function acf_relationship_filter($value, $post_id, $field) {
+    if (is_user_logged_in()) {
+        return $value;
+    }
 
+    $result = array();
+    if (is_array($value) && count($value) > 0) {
+        foreach ($value as $idx => $id_or_obj) {
+            // var_dump($id);
+            if (is_object($id_or_obj)) {
+                $id = $id_or_obj->ID;
+            } else {
+                $id = $id_or_obj;
+            }
+            $relationship_post = get_post($id);
+            $result[] = array(
+                'title' => $relationship_post->post_title,
+                'type' => $relationship_post->post_type,
+                'postId' => $id,
+                'content' => $relationship_post->post_content,
+                'fields' => get_fields($id)
+            );
+        }
+    }
+
+    return $result; // $value; // $result;
+}
 
 function get_options(WP_REST_Request $request) {
     $options = get_fields('options');
@@ -70,7 +101,7 @@ function get_page_by_slug(WP_REST_Request $request) {
 
     if ($slug == "frontpage") {
         $frontpage_id = get_option('page_on_front');
-        $page_object = get_post($id);
+        $page_object = get_post($frontpage_id);
     } else {
         $page_object = get_page_by_path($slug, OBJECT, 'page');
     }
@@ -92,6 +123,8 @@ function get_page_by_id(WP_REST_Request $request) {
 
     if ($page_object && $page_object->post_status == 'publish') {
         $sections = get_field('sections', $id);
+        var_dump($sections);
+        exit;
         return json_response(array(
             'title' => $page_object->post_title,
             'postId' => $page_object->ID,
