@@ -1,5 +1,12 @@
 <?php
 
+/* function flush_redis() {
+    $redis = new Redis();
+    $redis->connect('127.0.0.1');
+    $redis->flushAll();
+}
+add_action('save_post', 'flush_redis'); */
+
 $dev_fake_ie = false;
 
 function is_ie11_or_older() {
