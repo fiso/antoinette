@@ -50,14 +50,12 @@ add_action('rest_api_init', function () {
     ));
 });
 
-// acf/load_value/type={$field_type} - filter for a value load based on it's field type
 add_filter('acf/format_value/type=wysiwyg', 'acf_apply_post_content_filter', 20, 3);
 function acf_apply_post_content_filter($value, $post_id, $field) {
     if (is_user_logged_in()) {
         return $value;
     }
     return apply_filters('the_content', $value);
-    // return "ny kul text!!";
 }
 
 add_filter('acf/format_value/type=relationship', 'acf_relationship_filter', 20, 3);
