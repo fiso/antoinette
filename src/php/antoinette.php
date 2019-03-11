@@ -86,7 +86,54 @@ function acf_relationship_filter($value, $post_id, $field) {
         }
     }
 
-    return $result; // $value; // $result;
+    return $result;
+}
+
+add_filter('acf/format_value/type=post_object', 'acf_postobject_filter', 20, 3);
+function acf_postobject_filter($value, $post_id, $field) {
+    if (is_user_logged_in()) {
+        return $value;
+    }
+
+    // multiple values?
+    if (is_array($value)) {
+        $result = array();
+        foreach($value as $id_or_obj) {
+            if (is_object($id_or_obj)) {
+                $relationship_post = $id_or_obj;
+            } else {
+                $relationship_post = get_post($id_or_obj);
+            }
+            $result[] = array(
+                'title' => $relationship_post->post_title,
+                'type' => $relationship_post->post_type,
+                'postId' => $relationship_post->ID,
+                'content' => $relationship_post->post_content,
+                'fields' => get_fields($relationship_post->ID)
+            );
+        }
+        return $result;
+    }
+    /* single value */
+    else {
+        if (is_object($value)) {
+            $relationship_post = $value;
+        } else {
+            $relationship_post = get_post($value);
+        }
+
+        if (!$relationship_post) {
+            return null;
+        }
+
+        return array(
+            'title' => $relationship_post->post_title,
+            'type' => $relationship_post->post_type,
+            'postId' => $relationship_post->ID,
+            'content' => $relationship_post->post_content,
+            'fields' => get_fields($relationship_post->ID)
+        );
+    }
 }
 
 function get_options(WP_REST_Request $request) {
