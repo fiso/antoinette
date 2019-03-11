@@ -98,7 +98,12 @@ function acf_postobject_filter($value, $post_id, $field) {
     // multiple values?
     if (is_array($value)) {
         $result = array();
-        foreach($value as $id_or_obj) {
+
+        if (count($value) <= 0) {
+            return $result;
+        }
+
+        foreach ($value as $id_or_obj) {
             if (is_object($id_or_obj)) {
                 $relationship_post = $id_or_obj;
             } else {
