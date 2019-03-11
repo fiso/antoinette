@@ -67,7 +67,13 @@ function get_options(WP_REST_Request $request) {
 
 function get_page_by_slug(WP_REST_Request $request) {
     $slug = $request['slug'];
-    $page_object = get_page_by_path($slug, OBJECT, 'page');
+
+    if ($slug == "frontpage") {
+        $frontpage_id = get_option('page_on_front');
+        $page_object = get_post($id);
+    } else {
+        $page_object = get_page_by_path($slug, OBJECT, 'page');
+    }
 
     if ($page_object && $page_object->post_status == 'publish') {
         return json_response(array(
