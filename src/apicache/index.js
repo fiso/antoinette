@@ -4,7 +4,7 @@ const {promisify} = require('util');
 const redis = require('redis');
 
 const app = express();
-const remote = 'https://antoinette.stage.akademi.agency/wp-json/antionette';
+const remote = 'https://antoinette.stage.akademi.agency/wp-json/antoinette';
 
 const useRedis = false;
 const client = useRedis
