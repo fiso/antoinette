@@ -5,6 +5,16 @@ add_action('rest_api_init', function () {
         'methods' => 'GET',
         'callback' => 'get_page_by_slug',
     ));
+
+    register_rest_route('antoinette', '/posts', array(
+        'methods' => 'GET',
+        'callback' => 'antoinette_get_posts',
+    ));
+
+    register_rest_route('antoinette', '/posts/count', array(
+        'methods' => 'GET',
+        'callback' => 'antoinette_get_num_posts',
+    ));
 });
 
 function json_response($json_content) {
@@ -76,27 +86,14 @@ function acf_relationship_filter($value, $post_id, $field) {
                 $id = $id_or_obj;
             }
             $relationship_post = get_post($id);
-            $result[] = array(
-                'title' => $relationship_post->post_title,
-                'type' => $relationship_post->post_type,
-                'postId' => $id,
-                'content' => $relationship_post->post_content,
-                'permalink' => get_permalink($relationship_post->ID),
-                'fields' => get_fields($id),
-                'date'       => array(
-                    'y' => get_the_date('Y', $relationship_post),
-                    'm' => get_the_date('m  ', $relationship_post),
-                    'd' => get_the_date('d', $relationship_post),
-                ),
-                'categories' => get_all_categories_for_post_id($relationship_post->ID),
-                'tags'       => get_all_tags_for_post_id($relationship_post->ID),
-            );
+            $result[] = format_post($relationship_post);
         }
     }
 
     return $result;
 }
 add_filter('acf/format_value/type=relationship', 'acf_relationship_filter', 20, 3);
+
 
 /*
     Rewrite "post object" field to only include the relevant part of the post, and also the custom fields
@@ -120,22 +117,7 @@ function acf_postobject_filter($value, $post_id, $field) {
             } else {
                 $relationship_post = get_post($id_or_obj);
             }
-            $result[] = array(
-                'title' => $relationship_post->post_title,
-                'type' => $relationship_post->post_type,
-                'postId' => $relationship_post->ID,
-                'content' => $relationship_post->post_content,
-                'permalink' => get_permalink($relationship_post->ID),
-                'fields' => get_fields($relationship_post->ID),
-                'date'       => array(
-                    'y' => get_the_date('Y', $relationship_post),
-                    'm' => get_the_date('m  ', $relationship_post),
-                    'd' => get_the_date('d', $relationship_post),
-                ),
-                'categories' => get_all_categories_for_post_id($relationship_post->ID),
-                'tags'       => get_all_tags_for_post_id($relationship_post->ID),
-
-            );
+            $result[] = format_post($relationship_post);
         }
         return $result;
     } else {
@@ -150,24 +132,11 @@ function acf_postobject_filter($value, $post_id, $field) {
             return null;
         }
 
-        return array(
-            'title' => $relationship_post->post_title,
-            'type' => $relationship_post->post_type,
-            'postId' => $relationship_post->ID,
-            'content' => $relationship_post->post_content,
-            'permalink' => get_permalink($relationship_post->ID),
-            'fields' => get_fields($relationship_post->ID),
-            'date'       => array(
-                'y' => get_the_date('Y', $relationship_post),
-                'm' => get_the_date('m  ', $relationship_post),
-                'd' => get_the_date('d', $relationship_post),
-            ),
-            'categories' => get_all_categories_for_post_id($relationship_post->ID),
-            'tags'       => get_all_tags_for_post_id($relationship_post->ID),
-        );
+        return format_post($relationship_post);
     }
 }
 add_filter('acf/format_value/type=post_object', 'acf_postobject_filter', 20, 3);
+
 
 /*
     Rewrite all permalinks to use relative urls
@@ -194,10 +163,97 @@ function rewrite_permalink_for_backend($url, $post) {
     if (is_user_logged_in()) {
         return $frontend_url . $slug;
     }
-    return $url;
+    return $slug;
 }
 add_filter('page_link', 'rewrite_permalink_for_backend', 10, 2);
 add_filter('post_link', 'rewrite_permalink_for_backend', 10, 2);
+
+/*
+    Get the total number of posts of post_type
+*/
+function antoinette_get_num_posts(WP_REST_Request $request) {
+    $post_type = 'post';
+
+    if (isset($_GET['post_type'])) {
+        $post_type = $_GET['post_type'];
+    }
+
+    $wp_count_posts = wp_count_posts($post_type);
+
+    return json_response(array(
+        'num_posts' => intval($wp_count_posts->publish)
+    ));
+}
+
+/*
+    Attempt to get posts with certain parameters for filtering
+*/
+function antoinette_get_posts(WP_REST_Request $request) {
+
+    $criteria = array(
+        'post_type' => 'post',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+    );
+
+    if (isset($_GET['post_type'])) {
+        $criteria['post_type'] = $_GET['post_type'];
+    }
+
+    if (isset($_GET['posts_per_page'])) {
+        $criteria['posts_per_page'] = intval($_GET['posts_per_page']);
+    }
+
+    if (isset($_GET['offset'])) {
+        $criteria['offset'] = intval($_GET['offset']);
+    }
+
+    if (isset($_GET['orderby'])) {
+        $criteria['orderby'] = $_GET['orderby'];
+    }
+
+    if (isset($_GET['order'])) {
+        $criteria['order'] = $_GET['order'];
+    }
+
+    if (isset($_GET['meta_key'])) {
+        $criteria['meta_key'] = $_GET['meta_key'];
+    }
+
+    if (isset($_GET['meta_value'])) {
+        $criteria['meta_value'] = $_GET['meta_value'];
+    }
+
+    if (isset($_GET['include'])) {
+        $criteria['include'] = $_GET['include'];
+    }
+
+    if (isset($_GET['exclude'])) {
+        $criteria['exclude'] = $_GET['exclude'];
+    }
+
+    if (isset($_GET['post_parent'])) {
+        $criteria['post_parent'] = $_GET['post_parent'];
+    }
+
+    if (isset($_GET['category_name'])) {
+        $criteria['category_name'] = $_GET['category_name'];
+    }
+
+    $posts = get_posts($criteria);
+
+    $result = array();
+    foreach ($posts as $post) {
+        $result[] = format_post($post);
+    }
+
+    $wp_count_posts = wp_count_posts($criteria['post_type']);
+
+    return json_response(array(
+        'posts' => $result,
+        'num_posts' => intval($wp_count_posts->publish)
+    ));
+}
 
 /*
     Attempt to get a wordpress post object by slug
@@ -263,17 +319,32 @@ function get_page_by_slug(WP_REST_Request $request) {
 
     if ($is_custom_post_type) {
         $post_type = $page_object->post_type;
-        $post_data['fields'] = get_fields($page_object->ID);
         $page_builder_content = apply_filters('antoinette/custom_post_type_rows', $page_object);
+
+        // check if no filter was applied
+
+        // this is still a WP post object, means we do not have any page_builder_content
+        if (is_object($page_builder_content)) {
+            $page_builder_content = array();
+        }
+        // we somehow got an array but have no default rows, so I guess no page_builder_content
+        else if (!isset($page_builder_content['rows_default_rows'])) {
+            $page_builder_content = array();
+        }
     } else {
         $page_builder_content = get_field('page_builder_content', $page_object->ID);
+
+        $page_builder_content = get_field('page_builder_content', $page_object->ID);
+
+        // no need to include page builder content twice
+        unset($post_data['fields']['page_builder_content']);
     }
 
     $options = get_fields('options');
 
     if (($page_object && $page_object->post_status == 'publish')) {
-        $options = apply_filters('antoinette/format_options_data', $options);
         $options['site_title'] = get_bloginfo('name');
+        $options = apply_filters('antoinette/format_options_data', $options);
         return json_response(array(
             'options' => apply_filters('antoinette/format_options_data', $options),
             'page' => array(
@@ -319,6 +390,20 @@ function get_all_categories_for_post_id($id) {
     return $post_categories;
 }
 
-function get_all_pages(WP_REST_Request $request) {
-    return json_response(get_pages());
+function format_post($post) {
+    return array(
+        'title'      => $post->post_title,
+        'type'       => $post->post_type,
+        'postId'     => $post->ID,
+        'content'    => apply_filters('the_content', $post->post_content),
+        'permalink'  => get_permalink($post->ID),
+        'fields'     => get_fields($post->ID),
+        'date'       => array(
+            'y' => get_the_date('Y', $post),
+            'm' => get_the_date('m', $post),
+            'd' => get_the_date('d', $post),
+        ),
+        'categories' => get_all_categories_for_post_id($post->ID),
+        'tags'       => get_all_tags_for_post_id($post->ID),
+    );
 }

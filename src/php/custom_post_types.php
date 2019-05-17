@@ -15,7 +15,7 @@ function create_post_types() {
         'capability'=> 'edit_posts',
         'redirect' => false
     ));
-    register_post_type('acme_product',
+    /*register_post_type('acme_product',
         array(
         'labels' => array(
             'name' => __('Products'),
@@ -24,7 +24,7 @@ function create_post_types() {
         'public' => true,
         'has_archive' => true,
         )
-    );
+    );*/
 }
 
 add_action('init', 'create_post_types');
