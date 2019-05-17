@@ -344,7 +344,7 @@ function get_page_by_slug(WP_REST_Request $request) {
         $options['site_title'] = get_bloginfo('name');
         $options = apply_filters('antoinette/format_options_data', $options);
         return json_response(array(
-            'options' => apply_filters('antoinette/format_options_data', $options),
+            'options' => $options,
             'page' => array(
                 'page_builder_content' => apply_filters('antoinette/format_rows_data', $page_builder_content),
                 'meta' => array(
