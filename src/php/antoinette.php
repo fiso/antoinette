@@ -334,8 +334,6 @@ function get_page_by_slug(WP_REST_Request $request) {
     } else {
         $page_builder_content = get_field('page_builder_content', $page_object->ID);
 
-        $page_builder_content = get_field('page_builder_content', $page_object->ID);
-
         // no need to include page builder content twice
         unset($post_data['fields']['page_builder_content']);
     }
