@@ -19,7 +19,7 @@ add_action('rest_api_init', function () {
 
 function json_response($json_content) {
     return new WP_REST_Response(
-        array_map(convert_keys_to_camel_case, $json_content),
+        array_map('convert_keys_to_camel_case', $json_content),
         200,
         array('Content-Type' => 'application/json')
     );
