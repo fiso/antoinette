@@ -10,7 +10,8 @@
   },
   "scripts": {
     "build": "npm run clean && scripts/buildtheme.sh",
-    "dev": "set-bash-title \"⚡️ $npm_package_name\"; npm run checkconfig && scripts/buildtheme.sh && php -c php.ini -S 0.0.0.0:$npm_package_config_port -t build/",
+    "write-php-ini": "node scripts/writePhpIni.js",
+    "dev": "npm run write-php-ini && set-bash-title \"⚡️ $npm_package_name\"; npm run checkconfig && scripts/buildtheme.sh && php -c php.ini -S 0.0.0.0:$npm_package_config_port -t build/",
     "dbdump": "node scripts/dbdump.js",
     "dbrestore": "node scripts/dbrestore.js",
     "clean": "npm run save-uploads && npm run save-acf-json && rm -Rf build && npm run postinstall",
