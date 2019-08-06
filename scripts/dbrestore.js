@@ -17,5 +17,5 @@ try {
   process.exit(1);
 }
 
-cp.execSync(`mysql -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} -e "drop database \\\`${pkg.akademiId}\\\`"`);
+cp.execSync(`mysql -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} -e "drop database if exists \\\`${pkg.akademiId}\\\`"`);
 cp.execSync(`mysql -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} < dump.sql`);

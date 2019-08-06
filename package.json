@@ -19,7 +19,8 @@
     "postinstall": "composer install && node scripts/wp-install.js",
     "fix-permissions": "chmod -R ugo+r *",
     "save-acf-json": "cp -r build/wp-content/themes/akademi/acf-json/* src/php/acf-json/ || :",
-    "save-uploads": "cp -r build/wp-content/uploads/* src/uploads/ || :"
+    "save-uploads": "cp -r build/wp-content/uploads/* src/uploads/ || :",
+    "deploy-dev": "npm run build && npm run fix-permissions && rsync -rlD ./build/ root@dev.akademi.agency:/var/www/CHANGEME.dev.akademi.agency"
   },
   "devDependencies": {
     "json": "^9.0.6",
