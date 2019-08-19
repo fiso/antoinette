@@ -1,12 +1,11 @@
+const cp = require('child_process');
 const fs = require('fs');
+const {packageNameOk} = require('./checkconfig.js');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
-if (!pkg.akademiId) {
-  console.log('Project id not set!\n');
-  process.exit();
+if (!packageNameOk) {
+  process.exit(1);
 }
-
-const cp = require('child_process');
 
 let localEnvironment = {};
 
@@ -17,5 +16,6 @@ try {
   process.exit(1);
 }
 
-cp.execSync(`mysql -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} ${pkg.akademiId} -e "delete from wp_options where option_name like '%_transient_%'"`);
-cp.execSync(`mysqldump -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} --databases ${pkg.akademiId} > dump.sql`);
+console.log(`mysqldump -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} --databases ${pkg.name} > dump.sql`);
+cp.execSync(`mysql -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} ${pkg.name} -e "delete from wp_options where option_name like '%_transient_%'"`);
+cp.execSync(`mysqldump -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} --databases ${pkg.name} > dump.sql`);

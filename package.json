@@ -1,6 +1,7 @@
 {
   "name": "antoinette",
   "version": "0.1.0",
+  "description": "Antoinette cms",
   "author": "Akademi™",
   "private": true,
   "license": "UNLICENSED",
@@ -27,8 +28,6 @@
     "ncp": "^2.0.0",
     "node-bash-title": "0.0.2",
     "node-wget": "^0.4.3",
-    "readline-sync": "^1.4.9",
     "replace": "^1.0.1"
-  },
-  "akademiId": "antoinette"
+  }
 }

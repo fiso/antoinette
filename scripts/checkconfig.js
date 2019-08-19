@@ -1,21 +1,30 @@
-let projectId = '';
-let localEnvironment = {};
+const cp = require('child_process');
+const crypto = require('crypto');
+const fs = require('fs');
+const replace = require('replace');
 
-function checkConfig () {
-  const fs = require('fs');
+function packageNameOk () {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
-  if (!pkg.akademiId) {
-    console.log('Project id not set!\n');
+  if (!pkg.name || pkg.name === 'antoinette') {
+    // eslint-disable-next-line max-len
+    console.error('You should set the "name" field in your package.json file to something unique for this project');
     return false;
   }
 
-  projectId = pkg.akademiId;
+  return true;
+}
 
+function checkConfig () {
+  if (!packageNameOk()) {
+    process.exit(1);
+  }
+
+  let localEnvironment = null;
   try {
     localEnvironment = JSON.parse(fs.readFileSync('akademi-env.json', 'utf8'));
   } catch (error) {
-    console.log('Local environment not set up!\n');
+    console.error('Local environment not set up!\n');
     return false;
   }
 
@@ -23,48 +32,40 @@ function checkConfig () {
     || !localEnvironment.mysqlHost
     || !localEnvironment.mysqlUser
     || typeof localEnvironment.mysqlPass === 'undefined') {
-    console.log('Local environment not set up!\n');
+    console.error('Local environment not set up!\n');
     return false;
   }
 
   if (!fs.existsSync('src/wp-config.php')) {
-    console.log('wp-config missing!\n');
-    configure(projectId,
-        localEnvironment.mysqlHost,
-        localEnvironment.mysqlUser,
-        localEnvironment.mysqlPass);
+    console.error('wp-config missing!\n');
+    return false;
   }
 
   return true;
 }
 
-function configure (projectId, mysqlHost, mysqlUser, mysqlPass) {
-  const cp = require('child_process');
-  cp.execSync(`json -I -f package.json -e 'this.akademiId="${projectId}"'`);
+function configure (projectName, mysqlHost, mysqlUser, mysqlPass) {
   cp.execSync('echo {} > akademi-env.json');
   cp.execSync(`json -I -f akademi-env.json -e 'this.mysqlHost="${mysqlHost}";this.mysqlUser="${mysqlUser}";this.mysqlPass="${mysqlPass}"'`);
-
-  const replace = require('replace');
 
   // For some reason, the replace package refuses to work with files ending
   // in .sql, so we need to make a temporary copy to modify
   cp.execSync('cp ./src/meta/wp-fresh-install.sql ./sqldump.txt');
   replace({
     regex: '{{PROJECT_ID}}',
-    replacement: projectId,
+    replacement: projectName,
     paths: ['./sqldump.txt'],
     silent: true,
   });
   cp.execSync(`mysql -u ${mysqlUser} --password=${mysqlPass} < ./sqldump.txt`);
   cp.execSync('rm ./sqldump.txt');
 
-  const crypto = require('crypto');
   const generateTokenString = () => {
     return crypto.randomBytes(64).toString('hex');
   };
 
   const replacements = {
-    '{{DATABASE_NAME}}': projectId,
+    '{{DATABASE_NAME}}': projectName,
     '{{DATABASE_USER}}': mysqlUser,
     '{{DATABASE_PASSWORD}}': mysqlPass,
     '{{DATABASE_HOST}}': mysqlHost,
@@ -90,50 +91,23 @@ function configure (projectId, mysqlHost, mysqlUser, mysqlPass) {
   });
 }
 
-if (checkConfig()) {
-  process.exit(0);
-} else {
-  const rl = require('readline-sync');
+const runningAsScript = !module.parent;
 
-  console.log('🚀   Akademi WordPress template boilerplate configurator to the rescue!');
-  console.log(
-      '☎️   Hang on, summoning a wise owl to help guide you through the configuration process...\n');
-  console.log('🦉 — Hoot! Hello, Pie person!');
-  console.log('🦉 — Your project seems to be lacking some basic configuration...');
-  console.log(
-      '🦉 — Please humour me by answering a couple of simple questions to get started\n');
+if (runningAsScript) {
+  if (checkConfig()) {
+    process.exit(0);
+  } else {
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 
-  if (!projectId) {
-    projectId = rl.question('🦉 — First off, give me a project id for this exciting new project: ');
+    configure(pkg.name,
+        '127.0.0.1',
+        'root',
+        '');
+
+    process.exit(checkConfig() ? 0 : 1);
   }
-
-  if (Object.keys(localEnvironment).length < 3) {
-    localEnvironment.mysqlHost = rl.question('🦉 — Thank you. Now, what\'s your mysql host address? (127.0.0.1(:3306)) ');
-    localEnvironment.mysqlUser = rl.question('🦉 — Right, and what\'s the mysql username then? (root) ');
-    localEnvironment.mysqlPass = rl.question('🦉 — Wow, really? All right then. So finally, the mysql password? () ', {
-      hideEchoBack: true,
-    });
-  }
-
-  console.log('🦉 — Much obliged! That should be all for now, please have a seat while I set everything up for you...');
-  console.log('🦉 — If you don\'t hear from me again, everything went just fine!');
-  console.log('🦉 — Hoot!');
-  console.log('     The owl flies off into the distance...\n\n');
-
-  if (!localEnvironment.mysqlHost || !localEnvironment.mysqlHost.trim()) {
-    localEnvironment.mysqlHost = '127.0.0.1';
-  }
-  if (!localEnvironment.mysqlUser || !localEnvironment.mysqlUser.trim()) {
-    localEnvironment.mysqlUser = 'root';
-  }
-  if (!localEnvironment.mysqlPass || !localEnvironment.mysqlPass.trim()) {
-    localEnvironment.mysqlPass = '';
-  }
-
-  configure(projectId,
-      localEnvironment.mysqlHost,
-      localEnvironment.mysqlUser,
-      localEnvironment.mysqlPass);
-
-  process.exit(checkConfig() ? 0 : 1);
 }
+
+module.exports = {
+  packageNameOk,
+};
