@@ -32,3 +32,6 @@ if [ $foundnvm ]; then
   nvm use
   npm install
 fi
+
+git add .
+git commit -m ":tada: Initial commit"
