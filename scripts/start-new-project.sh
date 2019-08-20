@@ -25,7 +25,7 @@ unzip head.zip
 rm head.zip
 git init
 
-sed -i -e "s/\"antoinette\"/\"$projectslug\"/g" "package.json"
+sed -i "" -e "s/\"antoinette\"/\"$projectslug\"/g" "package.json"
 
 if [ $foundnvm ]; then
   nvm install
