@@ -79,7 +79,7 @@ function get_page_by_id(WP_REST_Request $request) {
 function get_page_by_slug(WP_REST_Request $request) {
     $slug = $request['slug'];
 
-    if ($slug == "frontpage") {
+    if ($slug == 'frontpage') {
         $frontpage_id = get_option('page_on_front');
         $page_object = get_post($frontpage_id);
     } else {
