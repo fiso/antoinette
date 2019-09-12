@@ -45,8 +45,10 @@ function checkConfig () {
 }
 
 function configure (projectName, mysqlHost, mysqlUser, mysqlPass) {
-  cp.execSync('echo {} > akademi-env.json');
-  cp.execSync(`json -I -f akademi-env.json -e 'this.mysqlHost="${mysqlHost}";this.mysqlUser="${mysqlUser}";this.mysqlPass="${mysqlPass}"'`);
+  if (!fs.existsSync('akademi-env.json')) {
+    cp.execSync('echo {} > akademi-env.json');
+    cp.execSync(`json -I -f akademi-env.json -e 'this.mysqlHost="${mysqlHost}";this.mysqlUser="${mysqlUser}";this.mysqlPass="${mysqlPass}"'`);
+  }
 
   // For some reason, the replace package refuses to work with files ending
   // in .sql, so we need to make a temporary copy to modify
@@ -98,11 +100,22 @@ if (runningAsScript) {
     process.exit(0);
   } else {
     const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    const cfg = (() => {
+      try {
+        return JSON.parse(fs.readFileSync('akademi-env.json', 'utf8'));
+      } catch (e) {
+        return {
+          mysqlHost: '127.0.0.1',
+          mysqlUser: 'root',
+          mysqlPass: ''
+        };
+      }
+    })();
 
     configure(pkg.name,
-        '127.0.0.1',
-        'root',
-        '');
+        cfg.mysqlHost,
+        cfg.mysqlUser,
+        cfg.mysqlPass);
 
     process.exit(checkConfig() ? 0 : 1);
   }
