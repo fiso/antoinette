@@ -16,6 +16,5 @@ try {
   process.exit(1);
 }
 
-console.log(`mysqldump -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} --databases ${pkg.name} > dump.sql`);
 cp.execSync(`mysql -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} ${pkg.name} -e "delete from wp_options where option_name like '%_transient_%'"`);
 cp.execSync(`mysqldump -u ${localEnvironment.mysqlUser} --password=${localEnvironment.mysqlPass} --databases ${pkg.name} > dump.sql`);
