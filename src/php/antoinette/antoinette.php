@@ -87,7 +87,7 @@ function get_page_by_id(WP_REST_Request $request) {
     $id = $request['id'];
     $page_object = get_post($id);
 
-    if ($page_object && $page_object->post_status == 'publish') {
+    if ($page_object && $page_object->post_status === 'publish') {
         return json_response(format_page_object($page_object));
     } else {
         return new WP_Error('antoinette_no_page', 'No such page', array( 'status' => 404 ) );
@@ -97,14 +97,14 @@ function get_page_by_id(WP_REST_Request $request) {
 function get_page_by_slug(WP_REST_Request $request) {
     $slug = $request['slug'];
 
-    if ($slug == 'frontpage') {
+    if ($slug === 'frontpage') {
         $frontpage_id = get_option('page_on_front');
         $page_object = get_post($frontpage_id);
     } else {
         $page_object = get_page_by_path($slug, OBJECT, 'page');
     }
 
-    if ($page_object && $page_object->post_status == 'publish') {
+    if ($page_object && $page_object->post_status === 'publish') {
         return json_response(format_page_object($page_object));
     } else {
         return new WP_Error('antoinette_no_page', 'No such page', array( 'status' => 404 ) );
