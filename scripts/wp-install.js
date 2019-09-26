@@ -14,7 +14,7 @@ try {
 
 process.chdir('build');
 
-const fileName = 'wordpress-5.0.3.zip';
+const fileName = 'wordpress-5.2.3.zip';
 cp.execSync('rm -Rf *');
 wget(`https://wordpress.org/${fileName}`, () => {
   cp.execSync(`unzip ${fileName} > /dev/null`);

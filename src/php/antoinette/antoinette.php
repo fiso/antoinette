@@ -1,11 +1,46 @@
 <?php
 
+/*
+    Do not add your project-specific functionality here. Add it to
+    [projectname].php and include that
+*/
+
+include('strip_wp_bloat.php');
+include('image_processing.php');
+include('cache_hooks.php');
+
+add_action('rest_api_init', function () {
+    register_rest_route('antoinette', '/pages/id/(?P<id>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_page_by_id',
+    ));
+
+    register_rest_route('antoinette', '/pages/slug/(?P<slug>\S+)', array(
+        'methods' => 'GET',
+        'callback' => 'get_page_by_slug',
+    ));
+
+    register_rest_route('antoinette', '/pages', array(
+        'methods' => 'GET',
+        'callback' => 'get_all_pages',
+    ));
+
+    register_rest_route('antoinette', '/options', array(
+        'methods' => 'GET',
+        'callback' => 'get_options',
+    ));
+});
+
 function json_response($json_content) {
     return new WP_REST_Response(
         array_map('convert_keys_to_camel_case', $json_content),
         200,
         array('Content-Type' => 'application/json')
     );
+}
+
+function snake_to_camel ($string) {
+    return lcfirst(str_replace('-', '', ucwords($string, '-')));
 }
 
 function convert_keys_to_camel_case($api_response_array) {
@@ -29,7 +64,9 @@ function convert_keys_to_camel_case($api_response_array) {
 }
 
 function get_all_options () {
-    return get_fields('options') ?: new ArrayObject();
+    $options = get_fields('options') ?: new ArrayObject();
+    $options['site_title'] = get_bloginfo('name');
+    return $options;
 }
 
 function format_page_object ($page_object) {
@@ -37,33 +74,14 @@ function format_page_object ($page_object) {
         'page' => [
             'title' => $page_object->post_title,
             'postId' => $page_object->ID,
+            'type' => $page_object->post_type,
+            'modified' => $page_object->post_modified,
+            'published' => $post->post_date,
             'sections' => get_field('sections', $page_object->ID),
         ],
         'options' => get_all_options(),
     );
 }
-
-add_action('rest_api_init', function () {
-    register_rest_route('antoinette', '/pages/id/(?P<id>\d+)', array(
-        'methods' => 'GET',
-        'callback' => 'get_page_by_id',
-    ));
-
-    register_rest_route('antoinette', '/pages/slug/(?P<slug>\S+)', array(
-        'methods' => 'GET',
-        'callback' => 'get_page_by_slug',
-    ));
-
-    register_rest_route('antoinette', '/pages', array(
-        'methods' => 'GET',
-        'callback' => 'get_all_pages',
-    ));
-
-    register_rest_route('antoinette', '/options', array(
-        'methods' => 'GET',
-        'callback' => 'get_options',
-    ));
-});
 
 function get_page_by_id(WP_REST_Request $request) {
     $id = $request['id'];
