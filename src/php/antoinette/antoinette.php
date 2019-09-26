@@ -76,7 +76,7 @@ function format_page_object ($page_object) {
             'postId' => $page_object->ID,
             'type' => $page_object->post_type,
             'modified' => $page_object->post_modified,
-            'published' => $post->post_date,
+            'published' => $page_object->post_date,
             'sections' => get_field('sections', $page_object->ID),
         ],
         'options' => get_all_options(),
