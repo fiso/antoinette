@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const cp = require('child_process');
 const {promisify} = require('util');
+const execAsync = promisify(cp.exec);
+const expectedPackageName = 'antoinette';
 
 function reject () {
   console.error('Verification failed. Please fix all errors and warnings and retry.');
@@ -11,9 +13,6 @@ function accept () {
   console.error('Push validated ✓');
   process.exit(0);
 }
-
-const execAsync = promisify(cp.exec);
-const expectedPackageName = 'antoinette';
 
 async function verifyPush () {
   process.stdout.write('Verifying git flags... ');
