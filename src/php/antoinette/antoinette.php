@@ -120,3 +120,40 @@ function get_options(WP_REST_Request $request) {
         'options' => get_all_options(),
     ));
 }
+
+/*
+    Rewrite "page link" field to use relative url
+*/
+function acf_pagelink_filter($value, $post_id, $field) {
+    if (is_user_logged_in()) {
+        return $value;
+    }
+    $slug = parse_url($value, PHP_URL_PATH);
+    return $slug;
+}
+add_filter('acf/format_value/type=page_link', 'acf_pagelink_filter', 20, 3);
+/*
+    Rewrite all permalinks to use relative urls
+*/
+function filter_permalink_for_frontend($url, $post) {
+    $slug = parse_url($url, PHP_URL_PATH);
+    $frontend_url = get_field('general', 'option')['frontend_base_url'];
+    if (is_user_logged_in()) {
+        return $frontend_url . $slug;
+    }
+    return $slug;
+}
+add_filter('post_type_link', 'filter_permalink_for_frontend', 10, 2);
+/*
+    Rewrite all permalinks for backend, when admin wants to preview etc.
+*/
+function rewrite_permalink_for_backend($url, $post) {
+    $frontend_url = get_field('general', 'option')['frontend_base_url'];
+    $slug = parse_url($url, PHP_URL_PATH);
+    if (is_user_logged_in()) {
+        return $frontend_url . $slug;
+    }
+    return $slug;
+}
+add_filter('page_link', 'rewrite_permalink_for_backend', 10, 2);
+add_filter('post_link', 'rewrite_permalink_for_backend', 10, 2);
