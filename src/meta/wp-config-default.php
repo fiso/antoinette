@@ -21,7 +21,13 @@ define('DB_HOST', '{{DATABASE_HOST}}');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 
-$siteroot = ($_SERVER['HTTPS'] ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
+$protocol = 'http';
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+    $protocol = $_SERVER['HTTP_X_FORWARDED_PROTO'];
+} else if (isset($_SERVER['HTTPS'])) {
+    $protocol = 'https';
+}
+$siteroot = $protocol . '://' . $_SERVER['HTTP_HOST'];
 define('WP_SITEURL', $siteroot);
 define('WP_HOME', $siteroot);
 
