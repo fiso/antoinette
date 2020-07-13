@@ -19,4 +19,4 @@
 2. `npm install`
 3. `npm run dev`
 
-The site should now be up and running at [http://localhost:9090](http://localhost:9090). The CMS can be reached at http://localhost:9090/wp-admin/. The default credentials are `admin / cocacola99`.
+The site should now be up and running at [http://localhost:9090](http://localhost:9090). The CMS can be reached at [http://localhost:9090/wp-admin/](http://localhost:9090/wp-admin/). The default credentials are `admin / cocacola99`.
