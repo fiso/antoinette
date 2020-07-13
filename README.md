@@ -5,7 +5,7 @@
 - [nvm](https://github.com/creationix/nvm)
 - [Composer](https://getcomposer.org/)
 - The `php` commandline tool (this is installed _by default_ on OSX)
-- A running mysql server. If you're using MAMP, you've already got one. If not, you can get the mysql server for OSX [here](https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.14-macos10.14-x86_64.dmg).
+- A running mysql server. You can get the mysql server for OSX [here](https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.14-macos10.14-x86_64.dmg).
 
 ## Starting a new project
 

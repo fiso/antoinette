@@ -2,7 +2,6 @@
 const cp = require('child_process');
 const {promisify} = require('util');
 const execAsync = promisify(cp.exec);
-const expectedPackageName = 'antoinette';
 
 function reject () {
   console.error('Verification failed. Please fix all errors and warnings and retry.');
@@ -24,14 +23,6 @@ async function verifyPush () {
     reject();
   }
   console.log('✓');
-
-  process.stdout.write('Verifying package name... ');
-  const pkg = require('../package.json');
-  if (pkg.name !== expectedPackageName) {
-    console.log('✗');
-    console.log(`You have changed the package name. Change it back to "${expectedPackageName}" before pushing.`);
-    reject();
-  }
 
   accept();
 }

@@ -9,14 +9,14 @@ function sa_sanitize_chars($filename) {
 }
 add_filter('sanitize_file_name', 'sa_sanitize_chars', 10);
 
-function akademi_setup() {
+function antoinette_setup() {
     add_theme_support('title-tag');
     add_theme_support('post-thumbnails');
     register_nav_menus(
-        array('main-menu' => __('Main Menu', 'akademi'))
+        array('main-menu' => __('Main Menu', 'antoinette'))
     );
 }
-add_action('after_setup_theme', 'akademi_setup');
+add_action('after_setup_theme', 'antoinette_setup');
 
 function add_mime_types($mimes) {
     $mimes['svg'] = 'image/svg+xml';

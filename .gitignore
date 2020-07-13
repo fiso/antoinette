@@ -3,7 +3,7 @@
 vendor/
 ref/
 src/wp-config.php
-akademi-env.json
+antoinette-env.json
 config.json
 
 **/*.log

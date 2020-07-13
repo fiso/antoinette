@@ -2,12 +2,12 @@
   "name": "antoinette",
   "version": "0.1.0",
   "description": "Antoinette cms",
-  "author": "Akademi™",
+  "author": "Antoinette",
   "private": true,
   "license": "UNLICENSED",
   "config": {
     "port": "9090",
-    "theme": "akademi"
+    "theme": "antoinette"
   },
   "scripts": {
     "build": "npm run clean && scripts/buildtheme.sh",
@@ -20,9 +20,9 @@
     "checkconfig": "node scripts/checkconfig.js",
     "postinstall": "composer install && node scripts/wp-install.js",
     "fix-permissions": "chmod -R ugo+r *",
-    "save-acf-json": "cp -r build/wp-content/themes/akademi/acf-json/* src/php/acf-json/ || :",
+    "save-acf-json": "cp -r build/wp-content/themes/antoinette/acf-json/* src/php/acf-json/ || :",
     "save-uploads": "cp -r build/wp-content/uploads/* src/uploads/ || :",
-    "deploy-dev": "npm run build && npm run fix-permissions && rsync -rlD ./build/ root@dev.akademi.agency:/var/www/CHANGEME.dev.akademi.agency"
+    "deploy-dev": "npm run build && npm run fix-permissions && rsync -rlD ./build/ USER@HOST:/var/www/CHANGEME"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",

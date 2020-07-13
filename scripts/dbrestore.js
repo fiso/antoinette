@@ -10,7 +10,7 @@ if (!packageNameOk) {
 let localEnvironment = {};
 
 try {
-  localEnvironment = JSON.parse(fs.readFileSync('akademi-env.json', 'utf8'));
+  localEnvironment = JSON.parse(fs.readFileSync('antoinette-env.json', 'utf8'));
 } catch (error) {
   console.log('Local environment not set up!\n');
   process.exit(1);

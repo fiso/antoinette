@@ -22,7 +22,7 @@ function checkConfig () {
 
   let localEnvironment = null;
   try {
-    localEnvironment = JSON.parse(fs.readFileSync('akademi-env.json', 'utf8'));
+    localEnvironment = JSON.parse(fs.readFileSync('antoinette-env.json', 'utf8'));
   } catch (error) {
     console.error('Local environment not set up!\n');
     return false;
@@ -45,9 +45,9 @@ function checkConfig () {
 }
 
 function configure (projectName, mysqlHost, mysqlUser, mysqlPass) {
-  if (!fs.existsSync('akademi-env.json')) {
-    cp.execSync('echo {} > akademi-env.json');
-    cp.execSync(`json -I -f akademi-env.json -e 'this.mysqlHost="${mysqlHost}";this.mysqlUser="${mysqlUser}";this.mysqlPass="${mysqlPass}"'`);
+  if (!fs.existsSync('antoinette-env.json')) {
+    cp.execSync('echo {} > antoinette-env.json');
+    cp.execSync(`json -I -f antoinette-env.json -e 'this.mysqlHost="${mysqlHost}";this.mysqlUser="${mysqlUser}";this.mysqlPass="${mysqlPass}"'`);
   }
 
   // For some reason, the replace package refuses to work with files ending
@@ -102,7 +102,7 @@ if (runningAsScript) {
     const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
     const cfg = (() => {
       try {
-        return JSON.parse(fs.readFileSync('akademi-env.json', 'utf8'));
+        return JSON.parse(fs.readFileSync('antoinette-env.json', 'utf8'));
       } catch (e) {
         return {
           mysqlHost: '127.0.0.1',
