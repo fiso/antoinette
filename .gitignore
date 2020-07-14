@@ -5,6 +5,7 @@ ref/
 src/wp-config.php
 antoinette-env.json
 config.json
+.wp-cache
 
 **/*.log
 shrinkwrap.yaml
