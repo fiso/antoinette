@@ -59,8 +59,24 @@ function configure (projectName, mysqlHost, mysqlUser, mysqlPass) {
     paths: ['./sqldump.txt'],
     silent: true,
   });
+  const password = crypto.randomBytes(8).toString('hex');
+  replace({
+    regex: '{{ADMIN_PASSWORD_HASH}}',
+    replacement: crypto.createHash('md5').update(password).digest('hex'),
+    paths: ['./sqldump.txt'],
+    silent: true,
+  });
   cp.execSync(`mysql -u ${mysqlUser} --password=${mysqlPass} < ./sqldump.txt`);
   cp.execSync('rm ./sqldump.txt');
+
+  console.log('== ADMIN PASSWORD GENERATED');
+  console.log('');
+  console.log('A password for the admin user has been generated for you.');
+  console.log('This password is not cryptographically secure, and you should change it before taking your site live.');
+  console.log('The password is:');
+  console.log(password);
+  console.log('');
+  console.log('== ADMIN PASSWORD GENERATED');
 
   const generateTokenString = () => {
     return crypto.randomBytes(64).toString('hex');
