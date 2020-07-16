@@ -69,6 +69,27 @@ function get_all_options () {
     return $options;
 }
 
+function sanitize_fields ($obj, $field_object) {
+    return array_map(function ($item) use (&$field_object) {
+        foreach ($field_object['layouts'] as $id => $layout) {
+            if ($layout['name'] === $item['acf_fc_layout']) {
+                foreach ($layout['sub_fields'] as $sub_field) {
+                    // ACF delivers a repeater with zero children as 'false'
+                    // because "fuck you that's why".
+                    // Here we look for those (empty repeaters) and change them
+                    // to an empty array, which objectively makes more sense.
+                    if ($sub_field['type'] === 'repeater') {
+                        if ($item[$sub_field['name']] === false) {
+                            $item[$sub_field['name']] = array();
+                        }
+                    }
+                }
+            }
+        }
+        return $item;
+    }, $obj);
+}
+
 function format_page_object ($page_object) {
     return array(
         'page' => [
@@ -77,7 +98,10 @@ function format_page_object ($page_object) {
             'type' => $page_object->post_type,
             'modified' => $page_object->post_modified,
             'published' => $page_object->post_date,
-            'sections' => get_field('sections', $page_object->ID),
+            'sections' => sanitize_fields(
+                get_field('sections', $page_object->ID),
+                get_field_object('sections', $page_object->ID),
+            ),
         ],
         'options' => get_all_options(),
     );
@@ -132,6 +156,7 @@ function acf_pagelink_filter($value, $post_id, $field) {
     return $slug;
 }
 add_filter('acf/format_value/type=page_link', 'acf_pagelink_filter', 20, 3);
+
 /*
     Rewrite all permalinks to use relative urls
 */
@@ -144,6 +169,7 @@ function filter_permalink_for_frontend($url, $post) {
     return $slug;
 }
 add_filter('post_type_link', 'filter_permalink_for_frontend', 10, 2);
+
 /*
     Rewrite all permalinks for backend, when admin wants to preview etc.
 */
