@@ -78,9 +78,8 @@ function configure (projectName, mysqlHost, mysqlUser, mysqlPass) {
   console.log('');
   console.log('== ADMIN PASSWORD GENERATED');
 
-  const generateTokenString = () => {
-    return crypto.randomBytes(64).toString('hex');
-  };
+  const generateTokenString = () =>
+    crypto.randomBytes(64).toString('hex');
 
   const replacements = {
     '{{DATABASE_NAME}}': projectName,

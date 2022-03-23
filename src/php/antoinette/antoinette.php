@@ -74,7 +74,7 @@ function sanitize_fields ($obj, $field_object) {
         foreach ($field_object['layouts'] as $id => $layout) {
             if ($layout['name'] === $item['acf_fc_layout']) {
                 foreach ($layout['sub_fields'] as $sub_field) {
-                    // ACF delivers a repeater with zero children as 'false'
+                    // ACF delivers a repeater with zero children as `false`
                     // because "fuck you that's why".
                     // Here we look for those (empty repeaters) and change them
                     // to an empty array, which objectively makes more sense.
